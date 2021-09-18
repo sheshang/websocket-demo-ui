@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ChatMessageDto } from '../models/chatMessageDto';
-
+import * as SockJS from 'sockjs-client';
 @Injectable({
   providedIn: 'root'
 })
@@ -13,7 +13,7 @@ export class WebSocketService {
 
   public openWebSocket(){
     if (!this.webSocket || this.webSocket.CLOSED) {
-      this.webSocket = new WebSocket('ws://localhost:8080/chat');
+      this.webSocket = new SockJS('http://localhost:8080/chat');
 
       this.webSocket.onopen = (event) => {
         console.log('Open: ', event);
@@ -32,8 +32,10 @@ export class WebSocketService {
   
       this.webSocket.onclose = (event) => {
         console.log('Close: ', event);
-        console.log('Retry: ', event);
-        this.openWebSocket();
+        setTimeout(() => {
+          console.log('Retry: ', event);
+          this.openWebSocket();
+        }, 5000);
       };
     }
   }
